@@ -27,12 +27,16 @@ EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", 'text-embedding-005')
 DEBUG_STATE = os.getenv("DEBUG_STATE", "false").lower() in ('true', '1', 't', 'yes', 'y')
 EMBEDDING_DIMENSION = 768
 LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME", 'gemini-2.5-flash')
-PROJECT_ID= os.getenv("GOOGLE_CLOUD_PROJECT")
-LOCATION=os.getenv("GOOGLE_CLOUD_LOCATION")
+
+PROJECT_ID= os.getenv("PROJECT_ID")
+LOCATION=os.getenv("LOCATION")
+MODEL_ARMOR_TEMPLATE_ID = os.getenv("MODEL_ARMOR_TEMPLATE_ID")
+BIGQUERY_PROJECT_ID=os.getenv("BIGQUERY_PROJECT_ID")
 
 # Database Configuration
 DB_TYPE = os.getenv("DB_TYPE", "sqlite").lower()
-SQLLITE_DB_PATH = os.getenv('SQLITE_DB_PATH', "../data_london/")
+LOCAL_SQLLITE_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+SQLLITE_DB_PATH = os.getenv('SQLITE_DB_PATH', LOCAL_SQLLITE_DB_PATH)
 POSTGRES_USER = os.getenv("POSTGRES_USER", "user")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "password")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")

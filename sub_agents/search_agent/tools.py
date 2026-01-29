@@ -195,40 +195,22 @@ def get_database_settings():
     """
     global database_settings
     if database_settings is None:
-        if configs.db_type == "postgres":
-             database_settings = {
-                "sqlite_ddl_schema": """
-                TABLE activities (
-                    activity_id VARCHAR(50) PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    duration_min INT,
-                    duration_max INT,
-                    kid_friendliness_score INT,
-                    cost INT,
-                    sight_id VARCHAR(50) REFERENCES locations(sight_id), -- Foreign key to locations table
-                    description TEXT,
-                    embedding VECTOR(768)
-                );
-                """
-            }
-        else:
-            database_settings = {
-                "sqlite_ddl_schema": """
-                TABLE activities (
-                    activity_id VARCHAR(50) PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    duration_min INT,
-                    duration_max INT,
-                    kid_friendliness_score INT,
-                    cost INT,
-                    sight_id VARCHAR(50) REFERENCES locations(sight_id), -- Foreign key to locations table
-                    description TEXT,
-                    embedding VECTOR(768)
-                );
-                """
-            }
+        database_settings = {
+            "sqlite_ddl_schema": """
+            TABLE activities (
+                activity_id VARCHAR(50) PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                duration_min INT,
+                duration_max INT,
+                kid_friendliness_score INT,
+                cost INT,
+                sight_id VARCHAR(50) REFERENCES locations(sight_id),
+                description TEXT,
+                embedding VECTOR(768)
+            );
+            """
+        }
     return database_settings
-
 
 async def get_embedding_tool(
     vector_query: str,

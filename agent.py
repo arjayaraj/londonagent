@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 from .config import Config
 from .prompts import return_instructions_lyla
 from .sub_agents.search_agent.tools import setup_sqlite_client
@@ -20,23 +21,53 @@ from google.adk.agents.callback_context import CallbackContext
 from .tools.tools import call_db_agent
 from google.genai import types
 
-APP_NAME="LYLA"
+
+import os
+import google.auth
+from google.auth.transport.requests import Request
+
+
+from dotenv import load_dotenv
+from google.adk.agents import LlmAgent
+from google.adk.tools.mcp_tool import MCPToolset, StreamableHTTPConnectionParams, SseConnectionParams
+
+# --- IMPORT MODEL ARMOR MODULE ---
+from .sub_agents.search_agent.model_armor import (
+    check_model_input,
+    check_model_output,
+    check_tool_output
+)
+
+# --- BIGQUERY MCP TOOL ---
+# This imports the pre-initialized tool from your new file
+from .sub_agents.search_agent.bigquery_mcp import bigquery_toolset
+
+# --- CONFIGURATION ---
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+APP_NAME = "LYLA"
 configs = Config()
 
-def setup_before_agent_call(callback_context: CallbackContext):
-    """Setup the sqllite client."""
+def setup_db_resources(callback_context: CallbackContext):
     setup_sqlite_client()
 
+active_tools = [t for t in [call_db_agent, bigquery_toolset] if t is not None]
 
-# Initialize the agent outside the request handler for efficiency.
-root_agent = Agent(
+lyla_agent = Agent(
     model=configs.agent_settings.model,
     instruction=return_instructions_lyla(),
     name=configs.agent_settings.name,
-    tools=[
-        call_db_agent,
-    ],
-    before_agent_callback=setup_before_agent_call,
+
+
+    tools=active_tools,
+    
+    before_agent_callback=setup_db_resources,
+    
+    # Attach Security Callbacks 
+    before_model_callback=check_model_input,
+    after_model_callback=check_model_output,
+    after_tool_callback=check_tool_output,
+    
     generate_content_config=types.GenerateContentConfig(temperature=0.01),
 )
 
+root_agent = lyla_agent
