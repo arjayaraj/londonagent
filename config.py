@@ -28,8 +28,8 @@ DEBUG_STATE = os.getenv("DEBUG_STATE", "false").lower() in ('true', '1', 't', 'y
 EMBEDDING_DIMENSION = 768
 LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME", 'gemini-2.5-flash')
 
-PROJECT_ID= os.getenv("PROJECT_ID")
-LOCATION=os.getenv("LOCATION")
+PROJECT_ID= os.getenv("PROJECT_ID", "saas-poc-env")
+LOCATION=os.getenv("LOCATION", "us-central1")
 MODEL_ARMOR_TEMPLATE_ID = os.getenv("MODEL_ARMOR_TEMPLATE_ID")
 BIGQUERY_PROJECT_ID=os.getenv("BIGQUERY_PROJECT_ID")
 

@@ -58,13 +58,14 @@ _sqlite_conn = None
 _postgres_conn = None
 
 class activity(BaseModel):
-    activity_id: str
-    name: str
-    description: str
-    cost: float
-    duration_min: int
-    duration_max: int
-    kid_friendliness_score: int
+    activity_id: Optional[str] = None
+    name: Optional[str] = None
+    description: Optional[str] = None
+    cost: Optional[float] = None
+    duration_min: Optional[int] = None
+    duration_max: Optional[int] = None
+    kid_friendliness_score: Optional[int] = None
+    sight_id: Optional[str] = None
 
 class SQL_query_output(BaseModel):
     sql_query: str
@@ -219,7 +220,7 @@ async def get_embedding_tool(
     """Tool to create vector embedding for the vector search components of the user's query."""
     try:
         write_to_tool_context("get_embedding_tool_input", vector_query, tool_context)
-        client = genai.Client()
+        client = genai.Client(vertexai=True, project=configs.project, location=configs.location)
         response = client.models.embed_content(
             model=configs.embedding_model_name,
             contents=vector_query,
@@ -427,7 +428,8 @@ async def get_data_from_db_tool(
                     cost=row.get('cost'),
                     duration_min=row.get('duration_min'),
                     duration_max=row.get('duration_max'),
-                    kid_friendliness_score=row.get('kid_friendliness_score')
+                    kid_friendliness_score=row.get('kid_friendliness_score'),
+                    sight_id=row.get('sight_id')
                 )
                 activities_list.append(activity_obj)
             
